@@ -1,81 +1,221 @@
-# Домашние задания по семинарам
+#Eda-CLI(API)
+Небольшое CLI-приложение для базового анализа CSV-файлов. Используется в рамках Семинара 03 курса «Инженерия ИИ».
 
-В этой папке находятся **все домашние задания** по курсу «Инженерия Искусственного Интеллекта».
+##Требования
+Python 3.11+
 
-Каждое задание оформляется в отдельной папке:
+uv установлен в систему
 
-- `HW01/`
-- `HW02/`
-- `HW03/`
-- ...
-- `HWNN/`
+Инициализация проекта
+В корне проекта (S03):
+```
+bash
+uv sync
+```
+Эта команда:
 
-Внутри каждой папки должно быть как минимум **одно основное задание** в виде ноутбука Jupyter с тем же номером, что и папка.
+создаст виртуальное окружение .venv;
 
-Примеры:
+установит зависимости из pyproject.toml;
 
-- `homeworks/HW01/HW01.ipynb`
-- `homeworks/HW02/HW02.ipynb`
-- `homeworks/HW03/HW03.ipynb`
+установит сам проект eda-cli в окружение.
 
----
+Запуск CLI
+Краткий обзор
+bash
+uv run eda-cli overview data/example.csv
+Параметры:
 
-## Общие правила оформления
+--sep – разделитель (по умолчанию ,);
 
-1. **Не переименовывайте папку `homeworks/`.**
-2. Для каждого задания создавайте папку строго в формате:
-   - `HW01`, `HW02`, `HW03`, ..., `HW10`, `HW11` и т.д.
-3. Основной файл задания:
-   - должен находиться внутри соответствующей папки;
-   - должен называться так же, как и папка, с расширением `.ipynb`:
+--encoding – кодировка (по умолчанию utf-8).
 
-   ```text
-   homeworks/HW01/HW01.ipynb
-   homeworks/HW02/HW02.ipynb
-   ```
+Полный EDA-отчёт
+bash
+uv run eda-cli report data/example.csv --out-dir reports
+В результате в каталоге reports/ появятся:
 
-4. Дополнительные файлы (при необходимости) кладите в ту же папку:
+report.md – основной отчёт в Markdown;
 
-   - дополнительные ноутбуки (`analysis.ipynb`, `extra.ipynb`);
-   - скрипты (`utils.py`, `loader.py`);
-   - небольшие вспомогательные данные (если это позволяет задание).
+summary.csv – таблица по колонкам;
 
-   Если в задании есть особые требования к имени дополнительных файлов, следуйте формулировке в условии.
+missing.csv – пропуски по колонкам;
 
-5. Старайтесь делать ноутбук **самодостаточным**:
-   - в начале можно кратко описать, что делает работа;
-   - все шаги решения должны быть воспроизводимы подряд «сверху вниз».
+correlation.csv – корреляционная матрица (если есть числовые признаки);
 
----
+top_categories/*.csv – top-k категорий по строковым признакам;
 
-## Как добавлять новое задание
+hist_*.png – гистограммы числовых колонок;
 
-Для нового задания (например, домашка № 4):
+missing_matrix.png – визуализация пропусков;
 
-1. Создайте папку:
+correlation_heatmap.png – тепловая карта корреляций.
 
-   ```bash
-   mkdir -p homeworks/HW04
-   ```
+API Сервис
+Запуск API сервера
+Для запуска FastAPI сервиса:
 
-2. Создайте ноутбук:
+bash
+uv run uvicorn api.main:app --reload
+Или с использованием модуля API:
 
-   ```text
-   homeworks/HW04/HW04.ipynb
-   ```
+bash
+uv run python -m api.main
+Сервер будет доступен по адресу: http://localhost:8000
 
-3. Реализуйте решение внутри `HW04.ipynb` в соответствии с условием задания.
+Документация API
+После запуска сервера доступны:
 
----
+Swagger UI: http://localhost:8000/docs
 
-## Проверка преподавателем
+ReDoc: http://localhost:8000/redoc
 
-Преподаватель будет проверять домашние задания по факту наличия и базового соответствия следующим критериям:
+OpenAPI схема: http://localhost:8000/openapi.json
 
-- существует папка с правильным именем (`HW01/`, `HW02/` и т.п.);
-- внутри есть основной ноутбук (`HWN01.ipynb`, `HWN02.ipynb` и т.п.);
-- ноутбук открывается и содержит решение по теме соответствующего семинара.
+Доступные эндпоинты
+1. Проверка качества CSV файла
+text
+POST /quality-flags-from-csv
+Описание: Принимает CSV-файл и возвращает флаги качества данных.
 
-Если папка или файл названы по-другому, то проверка может быть затруднена или задание не будет засчитано автоматически.
+Параметры:
 
----
+file (multipart/form-data): CSV файл для анализа
+
+Пример запроса:
+
+bash
+curl -X POST "http://localhost:8000/quality-flags-from-csv" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@data/example.csv"
+Пример ответа:
+
+json
+{
+  "flags": {
+    "too_few_rows": false,
+    "too_many_columns": false,
+    "max_missing_share": 0.0,
+    "too_many_missing": false,
+    "has_constant_columns": false,
+    "has_high_cardinality_categoricals": true,
+    "quality_score": 0.75
+  }
+}
+2. Полный анализ CSV файла
+text
+POST /full-analysis-from-csv
+Описание: Принимает CSV-файл и возвращает полный EDA отчет в JSON формате.
+
+Параметры:
+
+file (multipart/form-data): CSV файл для анализа
+
+top_categories (query, optional): Количество топ-категорий для анализа (по умолчанию: 10)
+
+Пример запроса:
+
+bash
+curl -X POST "http://localhost:8000/full-analysis-from-csv?top_categories=10" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@data/example.csv"
+3. Статус сервиса
+text
+GET /health
+Описание: Проверка работоспособности API сервиса.
+
+Пример запроса:
+
+bash
+curl "http://localhost:8000/health"
+Пример ответа:
+
+json
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+4. Информация о сервисе
+text
+GET /info
+Описание: Возвращает информацию о версии и возможностях сервиса.
+
+Пример запроса:
+
+bash
+curl "http://localhost:8000/info"
+Пример ответа:
+
+json
+{
+  "name": "eda-api-service",
+  "version": "1.0.0",
+  "description": "EDA (Exploratory Data Analysis) API Service для анализа CSV файлов",
+  "endpoints": [
+    "GET /health",
+    "GET /info",
+    "POST /quality-flags-from-csv",
+    "POST /full-analysis-from-csv"
+  ]
+}
+Примеры использования
+Python (requests)
+python
+import requests
+
+# Отправка CSV файла на анализ
+url = "http://localhost:8000/quality-flags-from-csv"
+files = {"file": open("data/example.csv", "rb")}
+response = requests.post(url, files=files)
+
+if response.status_code == 200:
+    quality_flags = response.json()
+    print(f"Качество данных: {quality_flags['flags']['quality_score']}")
+else:
+    print(f"Ошибка: {response.text}")
+JavaScript (fetch)
+javascript
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+
+fetch('http://localhost:8000/quality-flags-from-csv', {
+  method: 'POST',
+  body: formData
+})
+.then(response => response.json())
+.then(data => console.log(data));
+Тесты
+Для запуска тестов:
+
+bash
+uv run pytest -q
+Для запуска тестов с покрытием:
+
+bash
+uv run pytest --cov=eda_cli --cov=api --cov-report=html
+Структура проекта
+text
+S03/
+├── api/                    # API сервис FastAPI
+│   ├── main.py            # Основной файл приложения
+│   ├── routes/            # Маршруты API
+│   └── models/            # Pydantic модели
+├── eda_cli/               # CLI приложение
+│   ├── core/              # Основная логика EDA
+│   ├── cli.py             # CLI интерфейс
+│   └── __init__.py
+├── data/                  # Примеры данных
+│   └── example.csv
+├── tests/                 # Тесты
+├── pyproject.toml         # Зависимости и конфигурация
+└── README.md             # Документация
+Поддерживаемые форматы
+API поддерживает CSV файлы со следующими content-types:
+
+text/csv
+
+application/vnd.ms-excel
+
+application/octet-stream
