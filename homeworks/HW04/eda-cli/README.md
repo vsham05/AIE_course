@@ -1,221 +1,202 @@
-#Eda-CLI(API)
-Небольшое CLI-приложение для базового анализа CSV-файлов. Используется в рамках Семинара 03 курса «Инженерия ИИ».
+# S03 – eda_cli: мини-EDA для CSV
 
-##Требования
-Python 3.11+
+Небольшое CLI-приложение для базового анализа CSV-файлов.
+Используется в рамках Семинара 04    курса «Инженерия ИИ».
+Также есть модуль `api.py` с FastAPI-приложением;
 
-uv установлен в систему
+## Требования
 
-Инициализация проекта
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) установлен в систему
+
+## Инициализация проекта
+
 В корне проекта (S03):
-```
-bash
+
+```bash
 uv sync
 ```
+
 Эта команда:
 
-создаст виртуальное окружение .venv;
+- создаст виртуальное окружение `.venv`;
+- установит зависимости из `pyproject.toml`;
+- установит сам проект `eda-cli` в окружение.
 
-установит зависимости из pyproject.toml;
+## Запуск CLI
 
-установит сам проект eda-cli в окружение.
+### Краткий обзор
 
-Запуск CLI
-Краткий обзор
-bash
+```bash
 uv run eda-cli overview data/example.csv
+```
+
 Параметры:
 
---sep – разделитель (по умолчанию ,);
+- `--sep` – разделитель (по умолчанию `,`);
+- `--encoding` – кодировка (по умолчанию `utf-8`).
+- `--title` - название .md-файла (по умолчанию `report`)
+- `--index_col` - колонка для индексации загружаемого датасета (по умолчанию `None`)
 
---encoding – кодировка (по умолчанию utf-8).
+### Полный EDA-отчёт
 
-Полный EDA-отчёт
-bash
+```bash
 uv run eda-cli report data/example.csv --out-dir reports
-В результате в каталоге reports/ появятся:
+```
 
-report.md – основной отчёт в Markdown;
+В результате в каталоге `reports/` появятся:
 
-summary.csv – таблица по колонкам;
+- `report.md` – основной отчёт в Markdown;
+- `summary.csv` – таблица по колонкам;
+- `missing.csv` – пропуски по колонкам;
+- `correlation.csv` – корреляционная матрица (если есть числовые признаки);
+- `top_categories/*.csv` – top-k категорий по строковым признакам;
+- `hist_*.png` – гистограммы числовых колонок;
+- `missing_matrix.png` – визуализация пропусков;
+- `correlation_heatmap.png` – тепловая карта корреляций.
 
-missing.csv – пропуски по колонкам;
+## Тесты
 
-correlation.csv – корреляционная матрица (если есть числовые признаки);
+```bash
+uv run pytest -q
+```
 
-top_categories/*.csv – top-k категорий по строковым признакам;
 
-hist_*.png – гистограммы числовых колонок;
+## Запуск HTTP-сервиса
 
-missing_matrix.png – визуализация пропусков;
+HTTP-сервис реализован в модуле `eda_cli.api` на FastAPI.
 
-correlation_heatmap.png – тепловая карта корреляций.
+### Запуск Uvicorn
 
-API Сервис
-Запуск API сервера
-Для запуска FastAPI сервиса:
+```bash
+uv run uvicorn eda_cli.api:app --reload --port 8000
+```
 
-bash
-uv run uvicorn api.main:app --reload
-Или с использованием модуля API:
+Пояснения:
 
-bash
-uv run python -m api.main
-Сервер будет доступен по адресу: http://localhost:8000
+- `eda_cli.api:app` - путь до объекта FastAPI `app` в модуле `eda_cli.api`;
+- `--reload` - автоматический перезапуск сервера при изменении кода (удобно для разработки);
+- `--port 8000` - порт сервиса (можно поменять при необходимости).
 
-Документация API
-После запуска сервера доступны:
+После запуска сервис будет доступен по адресу:
 
-Swagger UI: http://localhost:8000/docs
+```text
+http://127.0.0.1:8000
+```
 
-ReDoc: http://localhost:8000/redoc
+---
 
-OpenAPI схема: http://localhost:8000/openapi.json
+## Эндпоинты сервиса
 
-Доступные эндпоинты
-1. Проверка качества CSV файла
-text
-POST /quality-flags-from-csv
-Описание: Принимает CSV-файл и возвращает флаги качества данных.
+### 1. `GET /health`
 
-Параметры:
+Простейший health-check.
 
-file (multipart/form-data): CSV файл для анализа
+**Запрос:**
 
-Пример запроса:
+```http
+GET /health
+```
 
-bash
-curl -X POST "http://localhost:8000/quality-flags-from-csv" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@data/example.csv"
-Пример ответа:
+**Ожидаемый ответ `200 OK` (JSON):**
 
-json
+```json
 {
+  "status": "ok",
+  "service": "dataset-quality",
+  "version": "0.2.0"
+}
+```
+
+Пример проверки через `curl`:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+---
+
+### 2. Swagger UI: `GET /docs`
+
+Интерфейс документации и тестирования API:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Через `/docs` можно:
+
+- вызывать `GET /health`;
+- вызывать `POST /quality` (форма для JSON);
+- вызывать `POST /quality-from-csv` (форма для загрузки файла).
+- вызывать `POST /quality-flags-from-csv` (форма для загрузки файла).
+
+---
+
+### 3. `POST /quality` – заглушка по агрегированным признакам
+
+Эндпоинт принимает **агрегированные признаки датасета** (размеры, доля пропусков и т.п.) и возвращает эвристическую оценку качества.
+
+**Пример запроса:**
+
+```http
+POST /quality
+Content-Type: application/json
+```
+
+Тело:
+
+```json
+{
+  "n_rows": 10000,
+  "n_cols": 12,
+  "max_missing_share": 0.15,
+  "numeric_cols": 8,
+  "categorical_cols": 4
+}
+```
+
+**Пример ответа `200 OK`:**
+
+```json
+{
+  "ok_for_model": true,
+  "quality_score": 0.8,
+  "message": "Данных достаточно, модель можно обучать (по текущим эвристикам).",
+  "latency_ms": 3.2,
   "flags": {
     "too_few_rows": false,
     "too_many_columns": false,
-    "max_missing_share": 0.0,
     "too_many_missing": false,
-    "has_constant_columns": false,
-    "has_high_cardinality_categoricals": true,
-    "quality_score": 0.75
+    "no_numeric_columns": false,
+    "no_categorical_columns": false
+  },
+  "dataset_shape": {
+    "n_rows": 10000,
+    "n_cols": 12
   }
 }
-2. Полный анализ CSV файла
-text
-POST /full-analysis-from-csv
-Описание: Принимает CSV-файл и возвращает полный EDA отчет в JSON формате.
+```
 
-Параметры:
+**Пример вызова через `curl`:**
 
-file (multipart/form-data): CSV файл для анализа
+```bash
+curl -X POST "http://127.0.0.1:8000/quality" \
+  -H "Content-Type: application/json" \
+  -d '{"n_rows": 10000, "n_cols": 12, "max_missing_share": 0.15, "numeric_cols": 8, "categorical_cols": 4}'
+```
 
-top_categories (query, optional): Количество топ-категорий для анализа (по умолчанию: 10)
+---
 
-Пример запроса:
+### 5. `POST /quality-flags-from-csv` – оценка качества по CSV-файлу
 
-bash
-curl -X POST "http://localhost:8000/full-analysis-from-csv?top_categories=10" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@data/example.csv"
-3. Статус сервиса
-text
-GET /health
-Описание: Проверка работоспособности API сервиса.
+Эндпоинт принимает CSV-файл, внутри:
 
-Пример запроса:
+- читает его в `pandas.DataFrame`;
+- вызывает функции из `eda_cli.core`:
 
-bash
-curl "http://localhost:8000/health"
-Пример ответа:
-
-json
-{
-  "status": "ok",
-  "timestamp": "2024-01-15T10:30:00Z"
-}
-4. Информация о сервисе
-text
-GET /info
-Описание: Возвращает информацию о версии и возможностях сервиса.
-
-Пример запроса:
-
-bash
-curl "http://localhost:8000/info"
-Пример ответа:
-
-json
-{
-  "name": "eda-api-service",
-  "version": "1.0.0",
-  "description": "EDA (Exploratory Data Analysis) API Service для анализа CSV файлов",
-  "endpoints": [
-    "GET /health",
-    "GET /info",
-    "POST /quality-flags-from-csv",
-    "POST /full-analysis-from-csv"
-  ]
-}
-Примеры использования
-Python (requests)
-python
-import requests
-
-# Отправка CSV файла на анализ
-url = "http://localhost:8000/quality-flags-from-csv"
-files = {"file": open("data/example.csv", "rb")}
-response = requests.post(url, files=files)
-
-if response.status_code == 200:
-    quality_flags = response.json()
-    print(f"Качество данных: {quality_flags['flags']['quality_score']}")
-else:
-    print(f"Ошибка: {response.text}")
-JavaScript (fetch)
-javascript
-const formData = new FormData();
-formData.append('file', fileInput.files[0]);
-
-fetch('http://localhost:8000/quality-flags-from-csv', {
-  method: 'POST',
-  body: formData
-})
-.then(response => response.json())
-.then(data => console.log(data));
-Тесты
-Для запуска тестов:
-
-bash
-uv run pytest -q
-Для запуска тестов с покрытием:
-
-bash
-uv run pytest --cov=eda_cli --cov=api --cov-report=html
-Структура проекта
-text
-S03/
-├── api/                    # API сервис FastAPI
-│   ├── main.py            # Основной файл приложения
-│   ├── routes/            # Маршруты API
-│   └── models/            # Pydantic модели
-├── eda_cli/               # CLI приложение
-│   ├── core/              # Основная логика EDA
-│   ├── cli.py             # CLI интерфейс
-│   └── __init__.py
-├── data/                  # Примеры данных
-│   └── example.csv
-├── tests/                 # Тесты
-├── pyproject.toml         # Зависимости и конфигурация
-└── README.md             # Документация
-Поддерживаемые форматы
-API поддерживает CSV файлы со следующими content-types:
-
-text/csv
-
-application/vnd.ms-excel
-
-application/octet-stream
+  - `summarize_dataset`,
+  - `missing_table`,
+  - `compute_quality_flags`;
+- возвращает список ВСЕХ флагов в json-формате
+---
