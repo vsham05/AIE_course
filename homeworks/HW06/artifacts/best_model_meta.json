@@ -4,7 +4,7 @@
     "ccp_alpha": 0.0,
     "criterion": "friedman_mse",
     "init": null,
-    "learning_rate": 0.1,
+    "learning_rate": 0.2,
     "loss": "log_loss",
     "max_depth": 5,
     "max_features": null,
@@ -16,15 +16,15 @@
     "n_estimators": 200,
     "n_iter_no_change": null,
     "random_state": 42,
-    "subsample": 0.8,
+    "subsample": 1.0,
     "tol": 0.0001,
     "validation_fraction": 0.1,
     "verbose": 0,
     "warm_start": false
   },
   "test_metrics": {
-    "accuracy": 0.9094444444444445,
-    "f1": 0.8077830188679245,
-    "roc_auc": 0.9277577496786535
+    "accuracy": 0.9033333333333333,
+    "f1": 0.8024971623155505,
+    "roc_auc": 0.9282153070476988
   }
 }
