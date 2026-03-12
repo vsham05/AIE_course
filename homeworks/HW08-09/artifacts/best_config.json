@@ -1,0 +1,19 @@
+{
+  "dataset": "CIFAR10",
+  "seed": 42,
+  "input_size": 3072,
+  "hidden_sizes": [
+    512,
+    256,
+    128
+  ],
+  "num_classes": 10,
+  "dropout": 0.0,
+  "batchnorm": true,
+  "optimizer": "Adam",
+  "lr": 0.001,
+  "batch_size": 128,
+  "early_stopping_patience": 5,
+  "best_val_accuracy": 55.25,
+  "epochs_trained": 16
+}
