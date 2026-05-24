@@ -59,3 +59,13 @@ logs/
 
 
 project/notebooks/printedLatexExpressions/sintetic
+
+data
+.env
+__pycache__
+.venv
+project/artifacts/bert_bird_finetuned
+project/artifacts/bert_model
+project/artifacts/models
+project/artifacts/bert_multilabel_model_final
+project/artifacts/schema_linker

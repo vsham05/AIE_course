@@ -1,0 +1,6 @@
+Метрика,Baseline (LR + MiniLM),DistilBERT (Spider → BIRD),Δ
+Hamming Loss ,0.1205,0.0397,-0.0808
+Exact Match (Subset Acc) ,0.2862,0.6839,0.3976
+F1 Micro ,0.7299,0.8961,0.1662
+F1 Macro ,0.5888,0.6887,0.0999
+F1 Samples ,0.6912,0.8529,0.1617

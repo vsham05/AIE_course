@@ -1,0 +1,16 @@
+{
+  "data_dir": "./spider/spider_data",
+  "output_dir": "./artifacts",
+  "model_dir": "./artifacts/models",
+  "test_size": 0.2,
+  "val_size": 0.25,
+  "max_length": 128,
+  "sentence_model": "all-MiniLM-L6-v2",
+  "bert_model": "distilbert-base-uncased",
+  "train_epochs": 5,
+  "lr_bert": 2e-05,
+  "batch_size": 16,
+  "weight_decay": 0.01,
+  "lr_max_iter": 1000,
+  "lr_c": 1.0
+}

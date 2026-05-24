@@ -1,0 +1,249 @@
+{
+  "experiment_config": {
+    "dataset": "Spider + BIRD",
+    "classes": [
+      "AggregationQ",
+      "DateFilterQ",
+      "DistinctQ",
+      "GroupQ",
+      "HavingQ",
+      "InListQ",
+      "JOINQ",
+      "LimitQ",
+      "NullCheckQ",
+      "SortQ",
+      "WhereQ"
+    ],
+    "seed": 42
+  },
+  "baseline_metrics": {
+    "hamming_loss": 0.12049555920122193,
+    "subset_accuracy": 0.2862476664592408,
+    "f1_micro": 0.7299010905401978,
+    "f1_macro": 0.5887618720207091,
+    "f1_samples": 0.691248155840564,
+    "classification_report": {
+      "AggregationQ": {
+        "precision": 0.8599735799207398,
+        "recall": 0.8942307692307693,
+        "f1-score": 0.8767676767676768,
+        "support": 728.0
+      },
+      "DateFilterQ": {
+        "precision": 0.16071428571428573,
+        "recall": 0.8181818181818182,
+        "f1-score": 0.26865671641791045,
+        "support": 22.0
+      },
+      "DistinctQ": {
+        "precision": 0.2976588628762542,
+        "recall": 0.7876106194690266,
+        "f1-score": 0.4320388349514563,
+        "support": 113.0
+      },
+      "GroupQ": {
+        "precision": 0.5572390572390572,
+        "recall": 0.8422391857506362,
+        "f1-score": 0.6707193515704154,
+        "support": 393.0
+      },
+      "HavingQ": {
+        "precision": 0.3619047619047619,
+        "recall": 0.8351648351648352,
+        "f1-score": 0.5049833887043189,
+        "support": 91.0
+      },
+      "InListQ": {
+        "precision": 0.2931937172774869,
+        "recall": 0.9180327868852459,
+        "f1-score": 0.4444444444444444,
+        "support": 61.0
+      },
+      "JOINQ": {
+        "precision": 0.6130434782608696,
+        "recall": 0.6682464454976303,
+        "f1-score": 0.6394557823129252,
+        "support": 633.0
+      },
+      "LimitQ": {
+        "precision": 0.7252396166134185,
+        "recall": 0.9007936507936508,
+        "f1-score": 0.8035398230088495,
+        "support": 252.0
+      },
+      "NullCheckQ": {
+        "precision": 0.07692307692307693,
+        "recall": 1.0,
+        "f1-score": 0.14285714285714285,
+        "support": 3.0
+      },
+      "SortQ": {
+        "precision": 0.8341968911917098,
+        "recall": 0.8846153846153846,
+        "f1-score": 0.8586666666666667,
+        "support": 364.0
+      },
+      "WhereQ": {
+        "precision": 0.8368098159509203,
+        "recall": 0.8317073170731707,
+        "f1-score": 0.8342507645259939,
+        "support": 820.0
+      },
+      "micro avg": {
+        "precision": 0.6532001815705856,
+        "recall": 0.8270114942528736,
+        "f1-score": 0.7299010905401978,
+        "support": 3480.0
+      },
+      "macro avg": {
+        "precision": 0.5106270130793256,
+        "recall": 0.852802073878379,
+        "f1-score": 0.5887618720207091,
+        "support": 3480.0
+      },
+      "weighted avg": {
+        "precision": 0.7166449492486372,
+        "recall": 0.8270114942528736,
+        "f1-score": 0.7568998333496608,
+        "support": 3480.0
+      },
+      "samples avg": {
+        "precision": 0.6534358609654192,
+        "recall": 0.8159717900850447,
+        "f1-score": 0.691248155840564,
+        "support": 3480.0
+      }
+    }
+  },
+  "final_model_metrics": {
+    "hamming_loss": 0.03971262091983934,
+    "subset_accuracy": 0.6838830118232732,
+    "f1_micro": 0.896061593129997,
+    "f1_macro": 0.6886801491067566,
+    "f1_samples": 0.8529115494890231,
+    "classification_report": {
+      "AggregationQ": {
+        "precision": 0.9344919786096256,
+        "recall": 0.9601648351648352,
+        "f1-score": 0.9471544715447154,
+        "support": 728.0
+      },
+      "DateFilterQ": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 22.0
+      },
+      "DistinctQ": {
+        "precision": 0.9791666666666666,
+        "recall": 0.415929203539823,
+        "f1-score": 0.5838509316770186,
+        "support": 113.0
+      },
+      "GroupQ": {
+        "precision": 0.9221105527638191,
+        "recall": 0.9338422391857506,
+        "f1-score": 0.9279393173198482,
+        "support": 393.0
+      },
+      "HavingQ": {
+        "precision": 0.8333333333333334,
+        "recall": 0.8791208791208791,
+        "f1-score": 0.8556149732620321,
+        "support": 91.0
+      },
+      "InListQ": {
+        "precision": 0.8157894736842105,
+        "recall": 0.5081967213114754,
+        "f1-score": 0.6262626262626263,
+        "support": 61.0
+      },
+      "JOINQ": {
+        "precision": 0.8148820326678766,
+        "recall": 0.7093206951026856,
+        "f1-score": 0.7584459459459459,
+        "support": 633.0
+      },
+      "LimitQ": {
+        "precision": 0.9563492063492064,
+        "recall": 0.9563492063492064,
+        "f1-score": 0.9563492063492064,
+        "support": 252.0
+      },
+      "NullCheckQ": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "SortQ": {
+        "precision": 0.9724517906336089,
+        "recall": 0.9697802197802198,
+        "f1-score": 0.9711141678129298,
+        "support": 364.0
+      },
+      "WhereQ": {
+        "precision": 0.9730769230769231,
+        "recall": 0.925609756097561,
+        "f1-score": 0.94875,
+        "support": 820.0
+      },
+      "micro avg": {
+        "precision": 0.9242516799022602,
+        "recall": 0.8695402298850575,
+        "f1-score": 0.896061593129997,
+        "support": 3480.0
+      },
+      "macro avg": {
+        "precision": 0.7456047234350245,
+        "recall": 0.6598467050593124,
+        "f1-score": 0.6886801491067566,
+        "support": 3480.0
+      },
+      "weighted avg": {
+        "precision": 0.9159936171315712,
+        "recall": 0.8695402298850575,
+        "f1-score": 0.8875872373296873,
+        "support": 3480.0
+      },
+      "samples avg": {
+        "precision": 0.8894835096453019,
+        "recall": 0.8489421281891724,
+        "f1-score": 0.8529115494890231,
+        "support": 3480.0
+      }
+    }
+  },
+  "comparison_table": [
+    {
+      "Метрика": "Hamming Loss ↓",
+      "Baseline (LR + MiniLM)": 0.1205,
+      "DistilBERT (Spider → BIRD)": 0.0397,
+      "Δ": -0.0808
+    },
+    {
+      "Метрика": "Exact Match (Subset Acc) ↑",
+      "Baseline (LR + MiniLM)": 0.2862,
+      "DistilBERT (Spider → BIRD)": 0.6839,
+      "Δ": 0.3976
+    },
+    {
+      "Метрика": "F1 Micro ↑",
+      "Baseline (LR + MiniLM)": 0.7299,
+      "DistilBERT (Spider → BIRD)": 0.8961,
+      "Δ": 0.1662
+    },
+    {
+      "Метрика": "F1 Macro ↑",
+      "Baseline (LR + MiniLM)": 0.5888,
+      "DistilBERT (Spider → BIRD)": 0.6887,
+      "Δ": 0.0999
+    },
+    {
+      "Метрика": "F1 Samples ↑",
+      "Baseline (LR + MiniLM)": 0.6912,
+      "DistilBERT (Spider → BIRD)": 0.8529,
+      "Δ": 0.1617
+    }
+  ]
+}

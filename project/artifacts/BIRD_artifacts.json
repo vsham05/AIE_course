@@ -1,0 +1,16 @@
+{
+  "models": [
+    "./artifacts/models/baseline_clf.pkl",
+    "./artifacts/models/baseline_encoder.pkl",
+    "./artifacts/models/bert_final",
+    "./artifacts/models/mlb.pkl",
+    "./artifacts/models/bert_bird_finetuned"
+  ],
+  "data": [
+    "./artifacts/test_dataset.csv",
+    "./artifacts/predictions.csv"
+  ],
+  "metrics": "./artifacts/results.json",
+  "config": "./artifacts/config.json",
+  "logs": "./artifacts/experiment.log"
+}
