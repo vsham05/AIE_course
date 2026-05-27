@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from src.settings.config import get_settings
 
 from src.models.llm.llm_client import OllamaStructuredClient
 from src.models.llm.models import (
@@ -22,14 +23,22 @@ logger = logging.getLogger(__name__)
 
 classifier: MultiLabelSQLClient | None = None
 llm_client: OllamaStructuredClient | None = None
+settings = None
 
-@asynccontextmanager
+asynccontextmanager
 async def lifespan(app: FastAPI):
-    global classifier, llm_client
-    logger.info("Initializing models...")
+    global classifier, llm_client, settings
+    settings = get_settings() 
+    
+    logger.info("Initializing models with config: model=%s, dir=%s", 
+                settings.llm_model_name, settings.classifier_model_dir)
     try:
-        classifier = MultiLabelSQLClient(model_dir="artifacts/bert_bird_finetuned/checkpoint-6188")
-        llm_client = OllamaStructuredClient(model="qwen3:1.7b", timeout=90)
+        classifier = MultiLabelSQLClient(model_dir=settings.classifier_model_dir)
+        llm_client = OllamaStructuredClient(
+            model=settings.llm_model_name,
+            base_url=settings.ollama_base_url,
+            timeout=settings.ollama_timeout
+        )
     except Exception as e:
         logger.error("Model initialization failed: %s", e)
         raise RuntimeError("Service startup failed") from e
@@ -47,7 +56,7 @@ async def classify_intent(req: ClassifyRequest):
     if classifier is None:
         raise HTTPException(status_code=503, detail="Classifier not initialized")
     try:
-        intents = classifier.predict(req.question, schema=req.schema.to_flat())
+        intents = classifier.predict(req.question, schema=req.schema)
         logger.info("Classified: '%s' -> %s", req.question, intents)
         return ClassifyResponse(intents=intents, question=req.question)
     except Exception as e:
@@ -59,7 +68,7 @@ async def generate_sql(req: GenerateRequest):
     if classifier is None or llm_client is None:
         raise HTTPException(status_code=503, detail="Models not initialized")
     try:
-        schema_flat = req.schema.to_flat()
+        schema_flat = req.schema
         active_classes = classifier.predict(req.question, schema=schema_flat)
         logger.info("Active intents for '%s': %s", req.question, active_classes)
 

@@ -1,53 +1,30 @@
-
-
-
 version: '3.8'
 
 services:
-  # Сервис с твоей логикой (FastAPI + BERT)
-  api:
-    build: .
-    container_name: sql-gen-api
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    volumes:
-      # Если хочешь менять код без пересборки образа, раскомментируй строки ниже:
-      # - ./src:/app/src
-      # - ./artifacts:/app/artifacts
-    depends_on:
-      - ollama
-    networks:
-      - ai-network
-
-  # Сервис с LLM (Ollama)
   ollama:
     image: ollama/ollama:latest
-    container_name: ollama-server
     ports:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
     environment:
-      # Прекачиваем модель при старте, чтобы API не ждал
-      - OLLAMA_KEEP_ALIVE=-1
-    networks:
-      - ai-network
-    # Скрипт для автозагрузки модели
-    entrypoint: /bin/sh
-    command: >
-      -c "
-      ollama serve &
-      sleep 5;
-      ollama pull qwen3:1.7b;
-      echo 'Ollama ready with qwen3:1.7b';
-      tail -f /dev/null
-      "
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+
+  api:
+    build: .
+    container_name: sql-gen-api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+
+    restart: unless-stopped
+    volumes:
+      - ./artifacts:/app/artifacts:ro
 
 volumes:
   ollama-data:
 
-networks:
-  ai-network:
-    driver: bridge
+

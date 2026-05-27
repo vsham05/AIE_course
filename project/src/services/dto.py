@@ -2,6 +2,11 @@ from pydantic import BaseModel, Field
 from typing import Dict, List
 
 
+SCHEMA_EXAMPLE = {
+    "employees": {"id": "INT", "name": "VARCHAR", "salary": "FLOAT"},
+    "departments": {"id": "INT", "name": "VARCHAR"}
+}
+
 class ColumnSpec(BaseModel):
     """Спецификация столбца."""
     dtype: str = Field(..., description="Тип данных столбца")
@@ -35,8 +40,11 @@ class DatabaseSchema(BaseModel):
 
 
 class ClassifyRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=2000)
-    schema: DatabaseSchema
+    question: str = Field(...)
+    schema: Dict[str, Dict[str, str]] = Field(
+        ...,
+        json_schema_extra={"example": SCHEMA_EXAMPLE}
+    )
 
 
 class ClassifyResponse(BaseModel):
@@ -45,12 +53,17 @@ class ClassifyResponse(BaseModel):
 
 
 class GenerateRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=2000)
-    schema: DatabaseSchema
-    base_table: str = Field(..., min_length=1, max_length=128)
+    question: str = Field(..., description="Вопрос пользователя")
+    schema: Dict[str, Dict[str, str]] = Field(
+        ...,
+        description="Схема БД: {таблица: {колонка: тип}}",
+        json_schema_extra={"example": SCHEMA_EXAMPLE}  # ← перебивает additionalProp
+    )
+    base_table: str = Field(..., description="Основная таблица")
 
 
 class GenerateResponse(BaseModel):
     sql: str
     intents: List[str]
     components_used: List[str]
+
