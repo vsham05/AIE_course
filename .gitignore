@@ -51,14 +51,10 @@ logs/
 .env.*
 !.env.example
 
-# Разное
 *.tmp
 *.bak
 *.old
 
-
-
-project/notebooks/printedLatexExpressions/sintetic
 
 data
 .env
