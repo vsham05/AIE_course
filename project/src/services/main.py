@@ -51,7 +51,7 @@ app = FastAPI(title="SQLGen API", version="1.0.0", lifespan=lifespan)
 async def health_check():
     return JSONResponse(status_code=200, content={"status": "healthy", "models_ready": bool(classifier and llm_client)})
 
-@app.post("/api/classify", response_model=ClassifyResponse)
+@app.post("/api/predict", response_model=ClassifyResponse)
 async def classify_intent(req: ClassifyRequest):
     if classifier is None:
         raise HTTPException(status_code=503, detail="Classifier not initialized")

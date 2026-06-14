@@ -6,3 +6,4 @@ artifacts\bert_bird_finetuned
 artifacts\bert_model
 artifacts\models
 artifacts\bert_multilabel_model_final
+data\spider_data.zip

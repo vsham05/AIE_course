@@ -56,10 +56,11 @@ logs/
 *.old
 
 
-data
+
 .env
 __pycache__
 .venv
+project/data/spider_data.zip
 project/artifacts/bert_bird_finetuned
 project/artifacts/bert_model
 project/artifacts/models
